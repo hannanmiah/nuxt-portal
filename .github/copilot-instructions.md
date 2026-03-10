@@ -207,7 +207,6 @@ export default eventHandler(async (event) => {
 - **useUpload()**: A Vue composable to handle file uploads on the client.
 
 ``vue
-
 <script setup lang="ts">
 const upload = useUpload('/api/upload')
 
@@ -228,4 +227,4 @@ async function onFileSelect(event: Event) {
     @change="onFileSelect"
   >
 </template>
-```
+``
