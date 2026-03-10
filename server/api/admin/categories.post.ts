@@ -2,7 +2,7 @@ import { db, schema } from '@nuxthub/db'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-  await requireMinRole(event, 'editor')
+  await requireMinRole(event, 'admin')
   const { name, description } = await readBody(event)
   if (!name) throw createError({ statusCode: 400, message: 'Category name is required' })
 

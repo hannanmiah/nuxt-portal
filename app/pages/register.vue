@@ -1,6 +1,8 @@
 <script setup lang="ts">
 definePageMeta({ layout: false })
 
+useHead({ title: 'Register' })
+
 const { isAuthenticated } = useAuth()
 const router = useRouter()
 const route = useRoute()
@@ -30,21 +32,17 @@ async function handleRegister() {
   loading.value = true
   error.value = ''
   try {
-    await $fetch('/api/auth/register', {
-      method: 'POST',
-      body: { name: form.name, email: form.email, password: form.password }
+    const { signUp, fetchSession } = useUserSession()
+    await signUp.email({
+      name: form.name,
+      email: form.email,
+      password: form.password,
     })
-    // Auto-login after register
-    await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: { email: form.email, password: form.password }
-    })
-    const { fetch: refreshSession } = useUserSession()
-    await refreshSession()
+    await fetchSession()
     const redirect = route.query.redirect as string || '/'
     router.push(redirect)
   } catch (e: any) {
-    error.value = e.data?.message || 'Registration failed. Please try again.'
+    error.value = e?.message || 'Registration failed. Please try again.'
   } finally {
     loading.value = false
   }

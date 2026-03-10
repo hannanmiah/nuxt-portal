@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Article } from '~/types'
 
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'admin-only'] })
+useHead({ title: 'Articles' })
 
 const { isEditor, isAdmin, user } = useAuth()
 const toast = useToast()

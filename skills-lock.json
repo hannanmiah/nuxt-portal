@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "nuxt": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "computedHash": "9e8237ec92083db9a6f4c77d5e5bf4b1d9873d670671235bc75455ee1ca39c74"
+    },
+    "nuxt-better-auth": {
+      "source": "onmax/nuxt-skills",
+      "sourceType": "github",
+      "computedHash": "38670ad6846049050b531ee65cb1dc653098bccc0caf7e9ebcef6ef0f3d6980b"
+    }
+  }
+}

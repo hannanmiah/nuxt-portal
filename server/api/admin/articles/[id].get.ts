@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const id = Number(getRouterParam(event, 'id'))
-  const user = await canEditArticle(event, id)
+  await requireMinRole(event, 'admin')
 
   const [article] = await db
     .select({
@@ -20,11 +20,11 @@ export default defineEventHandler(async (event) => {
       categoryId: schema.articles.categoryId,
       authorId: schema.articles.authorId,
       categoryName: schema.categories.name,
-      authorName: schema.users.name,
+      authorName: schema.user.name,
     })
     .from(schema.articles)
     .leftJoin(schema.categories, eq(schema.articles.categoryId, schema.categories.id))
-    .leftJoin(schema.users, eq(schema.articles.authorId, schema.users.id))
+    .leftJoin(schema.user, eq(schema.articles.authorId, schema.user.id))
     .where(eq(schema.articles.id, id))
     .limit(1)
 

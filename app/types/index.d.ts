@@ -15,7 +15,7 @@ export interface User {
 }
 
 export interface AuthUser {
-  id: number
+  id: string
   name: string
   email: string
   avatar: string
@@ -63,7 +63,7 @@ export interface Comment {
 }
 
 export interface AdminUser {
-  id: number
+  id: string
   name: string
   email: string
   avatar: string

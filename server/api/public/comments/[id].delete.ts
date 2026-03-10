@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const session = await requireUserSession(event)
-  const currentUser = session.user as { id: number; role: string }
+  const currentUser = session.user as { id: string; role: string }
   const id = Number(getRouterParam(event, 'id'))
 
   const [comment] = await db.select()

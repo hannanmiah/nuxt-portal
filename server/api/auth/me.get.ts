@@ -1,4 +1,4 @@
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
-  return session.user ?? null
+  const result = await getUserSession(event)
+  return result?.user ?? null
 })

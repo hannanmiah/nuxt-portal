@@ -22,7 +22,7 @@ function formatDate(d: string | null | undefined) {
 }
 
 useSeoMeta({
-  title: () => category.value ? `${category.value.name} - NewsPortal` : 'Category',
+  title: () => category.value?.name || 'Category',
   description: () => category.value?.description || '',
 })
 </script>

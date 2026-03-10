@@ -4,10 +4,23 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@nuxthub/core',
+    '@onmax/nuxt-better-auth',
     '@nuxt/ui',
     '@vueuse/nuxt',
-    'nuxt-auth-utils'
   ],
+
+  auth: {
+    redirects: {
+      login: '/login',
+      guest: '/',
+    },
+  },
+
+  routeRules: {
+    '/admin/**': { auth: { user: { role: 'admin' } } },
+    '/login': { auth: 'guest' },
+    '/register': { auth: 'guest' },
+  },
 
   css: ['~/assets/css/main.css'],
 

@@ -21,11 +21,11 @@ export default defineEventHandler(async (event) => {
       createdAt: schema.comments.createdAt,
       updatedAt: schema.comments.updatedAt,
       authorId: schema.comments.authorId,
-      authorName: schema.users.name,
-      authorAvatar: schema.users.avatar,
+      authorName: schema.user.name,
+      authorAvatar: (schema.user as any).avatar,
     })
     .from(schema.comments)
-    .leftJoin(schema.users, eq(schema.comments.authorId, schema.users.id))
+    .leftJoin(schema.user, eq(schema.comments.authorId, schema.user.id))
     .where(eq(schema.comments.articleId, article.id))
     .orderBy(asc(schema.comments.createdAt))
 

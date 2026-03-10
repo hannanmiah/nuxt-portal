@@ -1,4 +1,6 @@
 <script setup lang="ts">
+definePageMeta({ middleware: ['auth', 'admin-only'] })
+
 import type { Member } from '~/types'
 
 const { data: members } = await useFetch<Member[]>('/api/members', { default: () => [] })

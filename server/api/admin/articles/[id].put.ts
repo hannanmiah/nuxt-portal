@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const id = Number(getRouterParam(event, 'id'))
-  const user = await canEditArticle(event, id)
+  await requireMinRole(event, 'admin')
   const body = await readBody(event)
   const { title, excerpt, content, coverImage, categoryId, status } = body
 
@@ -11,10 +11,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Title and content are required' })
   }
 
-  let newStatus = status || 'draft'
-  if (!hasRole(user.role, 'editor') && !['draft', 'review'].includes(newStatus)) {
-    newStatus = 'review'
-  }
+  const newStatus = status || 'draft'
 
   const [existing] = await db.select().from(schema.articles).where(eq(schema.articles.id, id)).limit(1)
   const now = new Date()

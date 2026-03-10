@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const session = await requireUserSession(event)
-  const currentUser = session.user as { id: number; role: string }
+  const currentUser = session.user as { id: string; role: string }
   const slug = getRouterParam(event, 'slug')!
   const { content, parentId } = await readBody(event)
 
@@ -54,11 +54,11 @@ export default defineEventHandler(async (event) => {
       parentId: schema.comments.parentId,
       createdAt: schema.comments.createdAt,
       authorId: schema.comments.authorId,
-      authorName: schema.users.name,
-      authorAvatar: schema.users.avatar,
+      authorName: schema.user.name,
+      authorAvatar: (schema.user as any).avatar,
     })
     .from(schema.comments)
-    .leftJoin(schema.users, eq(schema.comments.authorId, schema.users.id))
+    .leftJoin(schema.user, eq(schema.comments.authorId, schema.user.id))
     .where(eq(schema.comments.id, comment.id))
     .limit(1)
 

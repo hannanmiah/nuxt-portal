@@ -3,6 +3,8 @@ import type { Article } from '~/types'
 
 definePageMeta({ layout: 'public' })
 
+useSeoMeta({ title: 'Latest News' })
+
 const { data: articlesData } = await useFetch('/api/public/articles', {
   query: { limit: 12 },
   default: () => ({ articles: [] as Article[] })

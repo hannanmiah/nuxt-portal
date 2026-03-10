@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Category } from '~/types'
 
-definePageMeta({ middleware: ['auth', 'editor-only'] })
+definePageMeta({ middleware: ['auth', 'admin-only'] })
+useHead({ title: 'Categories' })
 
 const toast = useToast()
 

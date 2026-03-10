@@ -2,7 +2,7 @@ import { db, schema } from '@nuxthub/db'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireMinRole(event, 'reporter')
+  const user = await requireMinRole(event, 'admin')
   const body = await readBody(event)
   const { title, excerpt, content, coverImage, categoryId } = body
 
@@ -10,11 +10,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Title and content are required' })
   }
 
-  // Reporters can only set draft or review; editors/admins can set any status
-  let status = body.status || 'draft'
-  if (!hasRole(user.role, 'editor') && !['draft', 'review'].includes(status)) {
-    status = 'draft'
-  }
+  const status = body.status || 'draft'
 
   const baseSlug = generateSlug(title)
   let slug = baseSlug

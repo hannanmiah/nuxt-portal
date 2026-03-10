@@ -8,14 +8,14 @@ const ROLE_LEVELS: Record<UserRole, number> = {
 }
 
 export const useAuth = () => {
-  const { user, fetch: fetchSession, clear } = useUserSession()
+  const { user: sessionUser, loggedIn, signIn, signOut: betterSignOut, fetchSession } = useUserSession()
   const router = useRouter()
 
-  const authUser = computed(() => user.value as AuthUser | null)
+  const user = computed(() => sessionUser.value as AuthUser | null)
 
-  const isAuthenticated = computed(() => !!authUser.value)
+  const isAuthenticated = computed(() => loggedIn.value)
 
-  const userRole = computed<UserRole | null>(() => authUser.value?.role ?? null)
+  const userRole = computed<UserRole | null>(() => user.value?.role ?? null)
 
   const hasRole = (minRole: UserRole) => {
     if (!userRole.value) return false
@@ -27,18 +27,17 @@ export const useAuth = () => {
   const isReporter = computed(() => hasRole('reporter'))
 
   const login = async (email: string, password: string) => {
-    await $fetch('/api/auth/login', { method: 'POST', body: { email, password } })
+    await signIn.email({ email, password })
     await fetchSession()
   }
 
   const logout = async () => {
-    await $fetch('/api/auth/logout', { method: 'POST' })
-    await clear()
+    await betterSignOut()
     router.push('/login')
   }
 
   return {
-    user: authUser,
+    user,
     isAuthenticated,
     userRole,
     hasRole,

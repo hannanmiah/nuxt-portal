@@ -72,7 +72,7 @@ useSeoMeta({
 
     <!-- Author & Date -->
     <div class="flex items-center gap-4 mb-8 pb-6 border-b border-default">
-      <UAvatar :src="article.authorAvatar || ''" :alt="article.authorName || ''" size="md" />
+      <UAvatar :src="resolveImageUrl(article.authorAvatar)" :alt="article.authorName || ''" size="md" />
       <div>
         <p class="font-semibold">{{ article.authorName }}</p>
         <p class="text-sm text-muted">{{ formatDate(article.publishedAt) }}</p>

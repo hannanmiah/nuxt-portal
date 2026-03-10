@@ -1,9 +1,11 @@
 <script setup lang="ts">
+definePageMeta({ middleware: ['auth', 'admin-only'] })
+
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const { user, login } = useAuth()
-const { fetch: fetchSession } = useUserSession()
+const { fetchSession } = useUserSession()
 const toast = useToast()
 
 const profileSchema = z.object({

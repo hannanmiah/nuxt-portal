@@ -1,7 +1,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: false })
 
-const { login, isAuthenticated } = useAuth()
+useHead({ title: 'Login' })
+
+const { isAuthenticated, login } = useAuth()
 const router = useRouter()
 const route = useRoute()
 
@@ -14,12 +16,6 @@ const form = reactive({ email: '', password: '' })
 const loading = ref(false)
 const error = ref('')
 
-// Determine context: coming from admin or public portal
-const isAdminRedirect = computed(() => {
-  const redirect = route.query.redirect as string || ''
-  return redirect.startsWith('/admin') || !redirect
-})
-
 async function handleLogin() {
   if (!form.email || !form.password) {
     error.value = 'Please enter your email and password.'
@@ -30,7 +26,6 @@ async function handleLogin() {
   try {
     await login(form.email, form.password)
     const { user } = useAuth()
-    // Admins/editors/reporters go to admin, viewers/public go back to their page
     const redirect = route.query.redirect as string
     if (redirect) {
       router.push(redirect)
@@ -40,7 +35,7 @@ async function handleLogin() {
       router.push('/')
     }
   } catch (e: any) {
-    error.value = e.data?.message || 'Invalid email or password.'
+    error.value = e?.message || 'Invalid email or password.'
   } finally {
     loading.value = false
   }

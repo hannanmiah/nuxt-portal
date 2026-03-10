@@ -1,5 +1,6 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'admin-only'] })
+useHead({ title: 'Dashboard' })
 
 const { isNotificationsSlideoverOpen } = useDashboard()
 const { user, isAdmin, isEditor } = useAuth()

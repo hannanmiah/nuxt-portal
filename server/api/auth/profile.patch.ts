@@ -2,41 +2,47 @@ import { db, schema } from '@nuxthub/db'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-  const session = await requireUserSession(event)
-  const userId = (session.user as any).id as number
+  const { user } = await requireUserSession(event)
+  const userId = user.id as string
   const { name, email, avatar } = await readBody(event)
 
   if (!name || !email) {
     throw createError({ statusCode: 400, message: 'Name and email are required' })
   }
 
+  const auth = serverAuth()
+
   // Check email uniqueness if changed
-  if (email !== (session.user as any).email) {
-    const [conflict] = await db.select({ id: schema.users.id })
-      .from(schema.users)
-      .where(eq(schema.users.email, email))
+  if (email !== user.email) {
+    const [conflict] = await db.select({ id: schema.user.id })
+      .from(schema.user)
+      .where(eq(schema.user.email, email))
       .limit(1)
     if (conflict) {
       throw createError({ statusCode: 409, message: 'Email already in use' })
     }
   }
 
-  const [updated] = await db.update(schema.users).set({
-    name,
-    email,
-    ...(avatar !== undefined ? { avatar } : {}),
-  }).where(eq(schema.users.id, userId)).returning({
-    id: schema.users.id,
-    name: schema.users.name,
-    email: schema.users.email,
-    avatar: schema.users.avatar,
-    role: schema.users.role,
+  await auth.api.updateUser({
+    body: { name, ...(avatar !== undefined ? { image: avatar } : {}) },
+    headers: event.headers,
   })
 
-  if (!updated) throw createError({ statusCode: 404, message: 'User not found' })
+  // Update email and avatar (custom field) directly if changed
+  const updateFields: Record<string, unknown> = {}
+  if (email !== user.email) updateFields.email = email
+  if (avatar !== undefined) updateFields.avatar = avatar
+  if (Object.keys(updateFields).length > 0) {
+    await db.update(schema.user).set(updateFields).where(eq(schema.user.id, userId))
+  }
 
-  // Refresh session with updated data
-  await setUserSession(event, { user: updated })
+  const [updated] = await db.select({
+    id: schema.user.id,
+    name: schema.user.name,
+    email: schema.user.email,
+    avatar: (schema.user as any).avatar,
+    role: (schema.user as any).role,
+  }).from(schema.user).where(eq(schema.user.id, userId)).limit(1)
 
   return updated
 })

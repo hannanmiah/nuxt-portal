@@ -17,7 +17,6 @@ export function generateSlug(title: string): string {
     separator: '-',
     trim: true,
   })
-  // Fallback to timestamp if title has no usable characters (e.g. only symbols)
   return slug || `post-${Date.now()}`
 }
 
@@ -26,8 +25,8 @@ export function hasRole(userRole: UserRole, minRole: UserRole): boolean {
 }
 
 export async function requireAuth(event: any) {
-  const session = await requireUserSession(event)
-  return session.user as { id: number; name: string; email: string; role: UserRole; avatar: string }
+  const { user } = await requireUserSession(event)
+  return user as { id: string; name: string; email: string; role: UserRole; avatar: string }
 }
 
 export async function requireMinRole(event: any, minRole: UserRole) {

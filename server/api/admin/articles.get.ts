@@ -2,7 +2,7 @@ import { db, schema } from '@nuxthub/db'
 import { eq, desc, and, or } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event)
+  await requireMinRole(event, 'admin')
   const query = getQuery(event)
   const status = query.status as string | undefined
   const categoryId = query.categoryId ? Number(query.categoryId) : undefined
@@ -10,18 +10,11 @@ export default defineEventHandler(async (event) => {
   const offset = Number(query.offset) || 0
 
   let conditions: any = undefined
-  if (hasRole(user.role, 'editor')) {
-    // editors/admins see all articles
-    if (status) conditions = eq(schema.articles.status, status as any)
-    if (categoryId) {
-      conditions = conditions
-        ? and(conditions, eq(schema.articles.categoryId, categoryId))
-        : eq(schema.articles.categoryId, categoryId)
-    }
-  } else {
-    // reporters see only their own articles
-    conditions = eq(schema.articles.authorId, user.id)
-    if (status) conditions = and(conditions, eq(schema.articles.status, status as any))
+  if (status) conditions = eq(schema.articles.status, status as any)
+  if (categoryId) {
+    conditions = conditions
+      ? and(conditions, eq(schema.articles.categoryId, categoryId))
+      : eq(schema.articles.categoryId, categoryId)
   }
 
   const rows = await db
@@ -38,11 +31,11 @@ export default defineEventHandler(async (event) => {
       categoryId: schema.articles.categoryId,
       categoryName: schema.categories.name,
       authorId: schema.articles.authorId,
-      authorName: schema.users.name,
+      authorName: schema.user.name,
     })
     .from(schema.articles)
     .leftJoin(schema.categories, eq(schema.articles.categoryId, schema.categories.id))
-    .leftJoin(schema.users, eq(schema.articles.authorId, schema.users.id))
+    .leftJoin(schema.user, eq(schema.articles.authorId, schema.user.id))
     .where(conditions)
     .orderBy(desc(schema.articles.updatedAt))
     .limit(limit)

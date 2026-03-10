@@ -19,12 +19,12 @@ export default defineEventHandler(async (event) => {
       categoryName: schema.categories.name,
       categorySlug: schema.categories.slug,
       authorId: schema.articles.authorId,
-      authorName: schema.users.name,
-      authorAvatar: schema.users.avatar,
+      authorName: schema.user.name,
+      authorAvatar: (schema.user as any).avatar,
     })
     .from(schema.articles)
     .leftJoin(schema.categories, eq(schema.articles.categoryId, schema.categories.id))
-    .leftJoin(schema.users, eq(schema.articles.authorId, schema.users.id))
+    .leftJoin(schema.user, eq(schema.articles.authorId, schema.user.id))
     .where(eq(schema.articles.slug, slug))
     .limit(1)
 
