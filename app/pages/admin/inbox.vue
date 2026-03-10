@@ -1,5 +1,4 @@
 <script setup lang="ts">
-definePageMeta({ middleware: ['auth', 'admin-only'] })
 useHead({ title: 'Inbox' })
 import { computed, ref, watch } from 'vue'
 import { breakpointsTailwind } from '@vueuse/core'

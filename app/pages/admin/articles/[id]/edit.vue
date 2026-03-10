@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { Category } from '~/types'
 
-definePageMeta({ middleware: ['auth', 'admin-only'] })
-useHead({ title: () => articleData.value?.title ? `Edit: ${articleData.value.title}` : 'Edit Article' })
 
 const { isEditor } = useAuth()
 const toast = useToast()
@@ -12,6 +10,8 @@ const articleId = Number(route.params.id)
 
 const { data: categories } = await useFetch<Category[]>('/api/admin/categories', { default: () => [] })
 const { data: articleData, error } = await useFetch(`/api/admin/articles/${articleId}`)
+
+useHead({ title: () => articleData.value?.title ? `Edit: ${articleData.value.title}` : 'Edit Article' })
 
 if (error.value) {
   throw createError({ statusCode: 404, message: 'Article not found' })

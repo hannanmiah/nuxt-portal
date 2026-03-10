@@ -1,5 +1,4 @@
 <script setup lang="ts">
-definePageMeta({ middleware: ['auth', 'admin-only'] })
 
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'

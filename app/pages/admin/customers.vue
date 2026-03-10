@@ -1,5 +1,4 @@
 <script setup lang="ts">
-definePageMeta({ middleware: ['auth', 'admin-only'] })
 useHead({ title: 'Customers' })
 import type { TableColumn } from '@nuxt/ui'
 import { upperFirst } from 'scule'

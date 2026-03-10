@@ -3,13 +3,16 @@ definePageMeta({ layout: false })
 
 useHead({ title: 'Login' })
 
-const { isAuthenticated, login } = useAuth()
-const router = useRouter()
+const { isAuthenticated, isAdmin, login } = useAuth()
 const route = useRoute()
 
+function getSafeRedirect() {
+  const redirect = route.query.redirect as string
+  return redirect?.startsWith('/') && !redirect.startsWith('//') ? redirect : null
+}
+
 if (isAuthenticated.value) {
-  const redirect = route.query.redirect as string || '/'
-  await navigateTo(redirect)
+  await navigateTo(getSafeRedirect() ?? (isAdmin.value ? '/admin' : '/'))
 }
 
 const form = reactive({ email: '', password: '' })
@@ -25,15 +28,8 @@ async function handleLogin() {
   error.value = ''
   try {
     await login(form.email, form.password)
-    const { user } = useAuth()
-    const redirect = route.query.redirect as string
-    if (redirect) {
-      router.push(redirect)
-    } else if (user.value && ['admin', 'editor', 'reporter'].includes(user.value.role)) {
-      router.push('/admin')
-    } else {
-      router.push('/')
-    }
+    const { isAdmin: checkAdmin } = useAuth()
+    await navigateTo(getSafeRedirect() ?? (checkAdmin.value ? '/admin' : '/'))
   } catch (e: any) {
     error.value = e?.message || 'Invalid email or password.'
   } finally {

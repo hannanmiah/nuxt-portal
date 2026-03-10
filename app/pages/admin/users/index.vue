@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { AdminUser, UserRole } from '~/types'
 
-definePageMeta({ middleware: ['auth', 'admin-only'] })
 useHead({ title: 'Users' })
 
 const toast = useToast()
