@@ -21,6 +21,14 @@ const profile = reactive<Partial<ProfileSchema>>({
   avatar: user.value?.avatar || '',
 })
 
+// Keep form in sync when session is refreshed
+watch(user, (u) => {
+  if (!u) return
+  profile.name = u.name || ''
+  profile.email = u.email || ''
+  profile.avatar = u.avatar || ''
+})
+
 const saving = ref(false)
 
 async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {

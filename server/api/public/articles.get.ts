@@ -9,7 +9,10 @@ export default defineEventHandler(async (event) => {
 
   let categoryId: number | undefined
   if (categorySlug) {
-    const [cat] = await db.select().from(schema.categories).where(eq(schema.categories.slug, categorySlug)).limit(1)
+    const cat = await db.query.categories.findFirst({
+      where: eq(schema.categories.slug, categorySlug),
+      columns: { id: true },
+    })
     if (!cat) return { articles: [], total: 0 }
     categoryId = cat.id
   }
@@ -18,28 +21,28 @@ export default defineEventHandler(async (event) => {
     ? and(eq(schema.articles.status, 'published'), eq(schema.articles.categoryId, categoryId))
     : eq(schema.articles.status, 'published')
 
-  const rows = await db
-    .select({
-      id: schema.articles.id,
-      title: schema.articles.title,
-      slug: schema.articles.slug,
-      excerpt: schema.articles.excerpt,
-      coverImage: schema.articles.coverImage,
-      publishedAt: schema.articles.publishedAt,
-      categoryId: schema.articles.categoryId,
-      categoryName: schema.categories.name,
-      categorySlug: schema.categories.slug,
-      authorId: schema.articles.authorId,
-      authorName: schema.user.name,
-      authorAvatar: (schema.user as any).avatar,
-    })
-    .from(schema.articles)
-    .leftJoin(schema.categories, eq(schema.articles.categoryId, schema.categories.id))
-    .leftJoin(schema.user, eq(schema.articles.authorId, schema.user.id))
-    .where(conditions)
-    .orderBy(desc(schema.articles.publishedAt))
-    .limit(limit)
-    .offset(offset)
+  const rows = await db.query.articles.findMany({
+    where: conditions,
+    columns: {
+      id: true, title: true, slug: true, excerpt: true, coverImage: true,
+      publishedAt: true, categoryId: true, authorId: true,
+    },
+    with: {
+      category: { columns: { name: true, slug: true } },
+      author: { columns: { name: true, image: true } },
+    },
+    orderBy: [desc(schema.articles.publishedAt)],
+    limit,
+    offset,
+  })
 
-  return { articles: rows }
+  const articles = rows.map(({ category, author, ...row }) => ({
+    ...row,
+    categoryName: category?.name ?? null,
+    categorySlug: category?.slug ?? null,
+    authorName: author?.name ?? null,
+    authorAvatar: author?.image ?? null,
+  }))
+
+  return { articles }
 })

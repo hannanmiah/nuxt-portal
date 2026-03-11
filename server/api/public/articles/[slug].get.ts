@@ -4,29 +4,13 @@ import { eq } from 'drizzle-orm'
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')!
 
-  const [article] = await db
-    .select({
-      id: schema.articles.id,
-      title: schema.articles.title,
-      slug: schema.articles.slug,
-      excerpt: schema.articles.excerpt,
-      content: schema.articles.content,
-      coverImage: schema.articles.coverImage,
-      status: schema.articles.status,
-      publishedAt: schema.articles.publishedAt,
-      createdAt: schema.articles.createdAt,
-      categoryId: schema.articles.categoryId,
-      categoryName: schema.categories.name,
-      categorySlug: schema.categories.slug,
-      authorId: schema.articles.authorId,
-      authorName: schema.user.name,
-      authorAvatar: (schema.user as any).avatar,
-    })
-    .from(schema.articles)
-    .leftJoin(schema.categories, eq(schema.articles.categoryId, schema.categories.id))
-    .leftJoin(schema.user, eq(schema.articles.authorId, schema.user.id))
-    .where(eq(schema.articles.slug, slug))
-    .limit(1)
+  const article = await db.query.articles.findFirst({
+    where: eq(schema.articles.slug, slug),
+    with: {
+      category: { columns: { name: true, slug: true } },
+      author: { columns: { name: true, image: true } },
+    },
+  })
 
   if (!article) {
     throw createError({ statusCode: 404, message: 'Article not found' })
@@ -36,5 +20,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Article not found' })
   }
 
-  return article
+  const { category, author, ...rest } = article
+  return {
+    ...rest,
+    categoryName: category?.name ?? null,
+    categorySlug: category?.slug ?? null,
+    authorName: author?.name ?? null,
+    authorAvatar: author?.image ?? null,
+  }
 })

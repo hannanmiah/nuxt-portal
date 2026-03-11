@@ -27,5 +27,11 @@ export default defineNuxtConfig({
   hub: {
     db: 'sqlite',
     blob: true
-  }
+  },
+
+  nitro: {
+    experimental: {
+      tasks: true,
+    },
+  },
 })

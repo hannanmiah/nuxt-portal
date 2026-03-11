@@ -4,37 +4,37 @@ import { eq, asc } from 'drizzle-orm'
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')!
 
-  const [article] = await db.select({ id: schema.articles.id })
-    .from(schema.articles)
-    .where(eq(schema.articles.slug, slug))
-    .limit(1)
+  const article = await db.query.articles.findFirst({
+    where: eq(schema.articles.slug, slug),
+    columns: { id: true },
+  })
 
   if (!article) {
     throw createError({ statusCode: 404, message: 'Article not found' })
   }
 
-  const rows = await db
-    .select({
-      id: schema.comments.id,
-      content: schema.comments.content,
-      parentId: schema.comments.parentId,
-      createdAt: schema.comments.createdAt,
-      updatedAt: schema.comments.updatedAt,
-      authorId: schema.comments.authorId,
-      authorName: schema.user.name,
-      authorAvatar: (schema.user as any).avatar,
-    })
-    .from(schema.comments)
-    .leftJoin(schema.user, eq(schema.comments.authorId, schema.user.id))
-    .where(eq(schema.comments.articleId, article.id))
-    .orderBy(asc(schema.comments.createdAt))
+  const rows = await db.query.comments.findMany({
+    where: eq(schema.comments.articleId, article.id),
+    columns: {
+      id: true, content: true, parentId: true,
+      createdAt: true, updatedAt: true, authorId: true,
+    },
+    with: {
+      author: { columns: { name: true, image: true } },
+    },
+    orderBy: [asc(schema.comments.createdAt)],
+  })
 
-  // Build threaded structure
   const commentMap = new Map<number, any>()
   const roots: any[] = []
 
-  for (const c of rows) {
-    commentMap.set(c.id, { ...c, replies: [] })
+  for (const { author, ...c } of rows) {
+    commentMap.set(c.id, {
+      ...c,
+      authorName: author?.name ?? null,
+      authorAvatar: author?.image ?? null,
+      replies: [],
+    })
   }
   for (const c of rows) {
     if (c.parentId && commentMap.has(c.parentId)) {

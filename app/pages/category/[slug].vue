@@ -28,7 +28,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <UContainer class="py-10">
     <!-- Category header -->
     <div class="mb-8 pb-6 border-b border-default">
       <nav class="flex items-center gap-2 text-sm text-muted mb-4">
@@ -85,5 +85,5 @@ useSeoMeta({
         </div>
       </NuxtLink>
     </div>
-  </div>
+  </UContainer>
 </template>

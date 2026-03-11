@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     id: schema.user.id,
     name: schema.user.name,
     email: schema.user.email,
-    avatar: (schema.user as any).avatar,
+    avatar: schema.user.image,
     role: (schema.user as any).role,
     createdAt: schema.user.createdAt,
   }).from(schema.user).orderBy(asc(schema.user.createdAt))

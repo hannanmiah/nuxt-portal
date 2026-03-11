@@ -22,9 +22,9 @@ function formatDate(d: string | null | undefined) {
 </script>
 
 <template>
-  <div>
+  <u-container>
     <section v-if="featuredArticle" class="border-b border-default">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div class="py-8 sm:py-12">
         <NuxtLink :to="`/article/${featuredArticle.slug}`" class="group block">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div v-if="featuredArticle.coverImage" class="order-last lg:order-first">
@@ -48,14 +48,14 @@ function formatDate(d: string | null | undefined) {
       </div>
     </section>
 
-    <div v-if="!articles.length" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center text-muted">
+    <div v-if="!articles.length" class="py-24 text-center text-muted">
       <UIcon name="i-lucide-newspaper" class="size-20 mx-auto mb-4 opacity-20" />
       <h2 class="text-2xl font-bold mb-2">No articles published yet</h2>
       <p class="mb-6">Check back soon for the latest news.</p>
       <UButton to="/admin" variant="outline">Go to Admin Panel</UButton>
     </div>
 
-    <section v-if="latestArticles.length" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <section v-if="latestArticles.length" class="py-10">
       <h2 class="text-2xl font-bold mb-6">Latest News</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <NuxtLink v-for="article in latestArticles" :key="article.id" :to="`/article/${article.slug}`" class="group flex flex-col gap-3">
@@ -79,7 +79,7 @@ function formatDate(d: string | null | undefined) {
       </div>
     </section>
 
-    <section v-if="moreArticles.length" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+    <section v-if="moreArticles.length" class="pb-10">
       <h2 class="text-xl font-bold mb-4">More Stories</h2>
       <div class="flex flex-col gap-1">
         <NuxtLink v-for="article in moreArticles" :key="article.id" :to="`/article/${article.slug}`" class="flex items-center gap-4 py-3 border-b border-default last:border-0 group">
@@ -91,5 +91,5 @@ function formatDate(d: string | null | undefined) {
         </NuxtLink>
       </div>
     </section>
-  </div>
+  </u-container>
 </template>

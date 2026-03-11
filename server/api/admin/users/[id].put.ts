@@ -13,13 +13,13 @@ export default defineEventHandler(async (event) => {
   const updateData: Record<string, unknown> = {}
   if (role) updateData.role = role
   if (name) updateData.name = name
-  if (avatar !== undefined) updateData.avatar = avatar
+  if (avatar !== undefined) updateData.image = avatar
 
   const [updated] = await db.update(schema.user).set(updateData).where(eq(schema.user.id, id)).returning({
     id: schema.user.id,
     name: schema.user.name,
     email: schema.user.email,
-    avatar: (schema.user as any).avatar,
+    avatar: schema.user.image,
     role: (schema.user as any).role,
   })
 

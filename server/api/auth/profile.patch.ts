@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
   // Update email and avatar (custom field) directly if changed
   const updateFields: Record<string, unknown> = {}
   if (email !== user.email) updateFields.email = email
-  if (avatar !== undefined) updateFields.avatar = avatar
+  if (avatar !== undefined) updateFields.image = avatar
   if (Object.keys(updateFields).length > 0) {
     await db.update(schema.user).set(updateFields).where(eq(schema.user.id, userId))
   }
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     id: schema.user.id,
     name: schema.user.name,
     email: schema.user.email,
-    avatar: (schema.user as any).avatar,
+    avatar: schema.user.image,
     role: (schema.user as any).role,
   }).from(schema.user).where(eq(schema.user.id, userId)).limit(1)
 

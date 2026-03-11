@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1773039001112,
-      "tag": "0000_magenta_marvex",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1773051963280,
-      "tag": "0001_slippery_landau",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1773053039972,
-      "tag": "0002_daily_the_hunter",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1773139723126,
-      "tag": "0003_damp_beast",
+      "when": 1773216092633,
+      "tag": "0000_long_skrulls",
       "breakpoints": true
     }
   ]

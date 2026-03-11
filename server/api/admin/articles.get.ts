@@ -1,5 +1,5 @@
 import { db, schema } from '@nuxthub/db'
-import { eq, desc, and, or } from 'drizzle-orm'
+import { eq, desc, and } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   await requireMinRole(event, 'admin')
@@ -17,29 +17,27 @@ export default defineEventHandler(async (event) => {
       : eq(schema.articles.categoryId, categoryId)
   }
 
-  const rows = await db
-    .select({
-      id: schema.articles.id,
-      title: schema.articles.title,
-      slug: schema.articles.slug,
-      excerpt: schema.articles.excerpt,
-      coverImage: schema.articles.coverImage,
-      status: schema.articles.status,
-      publishedAt: schema.articles.publishedAt,
-      createdAt: schema.articles.createdAt,
-      updatedAt: schema.articles.updatedAt,
-      categoryId: schema.articles.categoryId,
-      categoryName: schema.categories.name,
-      authorId: schema.articles.authorId,
-      authorName: schema.user.name,
-    })
-    .from(schema.articles)
-    .leftJoin(schema.categories, eq(schema.articles.categoryId, schema.categories.id))
-    .leftJoin(schema.user, eq(schema.articles.authorId, schema.user.id))
-    .where(conditions)
-    .orderBy(desc(schema.articles.updatedAt))
-    .limit(limit)
-    .offset(offset)
+  const rows = await db.query.articles.findMany({
+    where: conditions,
+    columns: {
+      id: true, title: true, slug: true, excerpt: true, coverImage: true,
+      status: true, publishedAt: true, createdAt: true, updatedAt: true,
+      categoryId: true, authorId: true,
+    },
+    with: {
+      category: { columns: { name: true } },
+      author: { columns: { name: true } },
+    },
+    orderBy: [desc(schema.articles.updatedAt)],
+    limit,
+    offset,
+  })
 
-  return { articles: rows }
+  const articles = rows.map(({ category, author, ...row }) => ({
+    ...row,
+    categoryName: category?.name ?? null,
+    authorName: author?.name ?? null,
+  }))
+
+  return { articles }
 })

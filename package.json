@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "db:fresh": "node scripts/db-fresh.mjs",
+    "db:seed": "node scripts/db-seed.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.96",

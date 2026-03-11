@@ -47,20 +47,14 @@ export default defineEventHandler(async (event) => {
   }).returning()
 
   // Return comment with author info
-  const [withAuthor] = await db
-    .select({
-      id: schema.comments.id,
-      content: schema.comments.content,
-      parentId: schema.comments.parentId,
-      createdAt: schema.comments.createdAt,
-      authorId: schema.comments.authorId,
-      authorName: schema.user.name,
-      authorAvatar: (schema.user as any).avatar,
-    })
-    .from(schema.comments)
-    .leftJoin(schema.user, eq(schema.comments.authorId, schema.user.id))
-    .where(eq(schema.comments.id, comment.id))
-    .limit(1)
+  const withAuthor = await db.query.comments.findFirst({
+    where: eq(schema.comments.id, comment.id),
+    columns: { id: true, content: true, parentId: true, createdAt: true, authorId: true },
+    with: {
+      author: { columns: { name: true, image: true } },
+    },
+  })
 
-  return { ...withAuthor, replies: [] }
+  const { author, ...rest } = withAuthor!
+  return { ...rest, authorName: author?.name ?? null, authorAvatar: author?.image ?? null, replies: [] }
 })

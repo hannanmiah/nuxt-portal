@@ -42,7 +42,8 @@ useSeoMeta({
 </script>
 
 <template>
-  <article v-if="article" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <UContainer>
+  <article v-if="article" class="py-10">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-sm text-muted mb-6">
       <NuxtLink to="/" class="hover:text-foreground transition-colors">Home</NuxtLink>
@@ -137,4 +138,5 @@ useSeoMeta({
     <!-- Comments -->
     <CommentSection :slug="slug" />
   </article>
+  </UContainer>
 </template>

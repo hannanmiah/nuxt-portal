@@ -11,7 +11,11 @@ export const useAuth = () => {
   const { user: sessionUser, loggedIn, signIn, signOut: betterSignOut, fetchSession } = useUserSession()
   const router = useRouter()
 
-  const user = computed(() => sessionUser.value as AuthUser | null)
+  const user = computed(() => {
+    if (!sessionUser.value) return null
+    const u = sessionUser.value as any
+    return { ...u, avatar: u.image ?? u.avatar ?? '' } as AuthUser
+  })
 
   const isAuthenticated = computed(() => loggedIn.value)
 

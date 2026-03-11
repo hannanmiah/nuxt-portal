@@ -8,12 +8,7 @@ export default defineServerAuth(({ db }) => ({
         type: 'string',
         defaultValue: 'viewer',
         input: true,
-      },
-      avatar: {
-        type: 'string',
-        defaultValue: '',
-        input: true,
-      },
+      }
     },
   },
 }))
